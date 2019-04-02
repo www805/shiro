@@ -1,13 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>首页</title>
 </head>
 <body>
 我的首页
-<span th:text="${key}"></span>
+<span th:text="${key}"></span><br/>
+<shiro:user>
+    欢迎<shiro:principal property="name"/>
+</shiro:user>
+<hr/>
 
-
+<p shiro:hasPermission="user:add">
+    <a href="/add">用户添加</a>
+</p>
+<p shiro:hasPermission="user:update">
+    <a href="/update">用户修改</a>
+</p>
+<shiro:guest>
+    <a href="/login">登录</a> <a href="/login">注册</a>
+</shiro:guest>
+<shiro:user>
+    <a href="/logout">退出</a>
+</shiro:user>
 </body>
 </html>

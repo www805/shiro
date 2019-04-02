@@ -33,15 +33,34 @@ public class UserController {
         return "add";
     }
 
+    @GetMapping("/update")
+    public String update(){
+        return "update";
+    }
+
+    @GetMapping("/noAuth")
+    public String noAuth(){
+        return "noAuth";
+    }
+
+    @GetMapping("/logout")
+    public String logout(Model model){
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        model.addAttribute("msg", "安全退出");
+        return "logout";
+    }
 
     @RequestMapping("/login")
     public String login(String name, String password, Model model){
 
         Subject subject = SecurityUtils.getSubject();
 
+        //创建token对象，把接收到的账号密码传入
         UsernamePasswordToken token = new UsernamePasswordToken(name, password);
 
         try {
+            //开始登录验证
             subject.login(token);
 
             return "redirect:/index";
