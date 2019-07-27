@@ -6,9 +6,11 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserRealm extends AuthorizingRealm {
@@ -40,21 +42,27 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         System.out.println("执行认证逻辑");
 
-
         //假设数据库
         String name = "aa";
         String pwd = "123";
+
+
 
         //获取token对象
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         //获取用户密码
         User user = userService.findByName(token.getUsername());
+//        Md5Hash md5Hash = new Md5Hash(user.getAddress(), "pyy");
+
 
         if(null == user){
             //用户名不存在
             return null;
         }
 
-        return new SimpleAuthenticationInfo(user, user.getAddress(), getName());
+        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, user.getAddress(), getName());
+//        simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes("pyy"));//设置加盐
+
+        return simpleAuthenticationInfo;
     }
 }

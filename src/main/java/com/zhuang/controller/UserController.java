@@ -1,11 +1,15 @@
 package com.zhuang.controller;
 
+import com.zhuang.domain.User;
+import com.zhuang.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +21,16 @@ import java.security.Security;
 @Controller
 public class UserController {
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/index")
     public ModelAndView index(){
 
         ModelAndView view = new ModelAndView();
+
+//        User user = userService.findById(1);
+//        System.out.println(user);
 
         view.setViewName("index");
         view.addObject("key","你好吗");

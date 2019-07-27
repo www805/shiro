@@ -1,6 +1,8 @@
 package com.zhuang.shiro;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,15 +58,36 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
+    /**
+     * shiro安全管理
+     * @param userRealm
+     * @return
+     */
     @Bean(value = "securityManager")
-    public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("UserRealm")UserRealm userRealm){
+    public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("UserRealm")UserRealm userRealm, @Qualifier("ehCacheManager")EhCacheManager ehCacheManager){
 
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //关联realm
         securityManager.setRealm(userRealm);
+        securityManager.setCacheManager(ehCacheManager);
         return securityManager;
     }
 
+    /**
+     * 设置缓存
+     * @return
+     */
+    @Bean(value = "ehCacheManager")
+    public EhCacheManager ehCacheManager() {
+        EhCacheManager ehCacheManager = new EhCacheManager();
+        ehCacheManager.setCacheManagerConfigFile("classpath:config/ehcache-shiro.xml");
+        return ehCacheManager;
+    }
+
+    /**
+     * 自定义认证
+     * @return
+     */
     @Bean(value = "UserRealm")
     public UserRealm getRealm(){
         return new UserRealm();
@@ -73,5 +96,18 @@ public class ShiroConfig {
     @Bean
     public ShiroDialect getShiroDialect(){
         return new ShiroDialect();
+    }
+
+    /**
+     *  开启shiro aop注解支持.
+     *  使用代理方式;所以需要开启代码支持;
+     * @param securityManager
+     * @return
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(@Qualifier("securityManager")DefaultWebSecurityManager securityManager){
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
     }
 }
