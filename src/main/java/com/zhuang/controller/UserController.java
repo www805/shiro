@@ -8,6 +8,8 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,12 +19,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Security;
+import java.util.Collection;
 
 @Controller
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SessionDAO sessionDAO;
 
     @GetMapping("/index")
     public ModelAndView index(){
@@ -32,8 +38,11 @@ public class UserController {
 //        User user = userService.findById(1);
 //        System.out.println(user);
 
+        Collection<Session> sessions = sessionDAO.getActiveSessions();
+
         view.setViewName("index");
         view.addObject("key","你好吗");
+        view.addObject("sessionSize", sessions.size());
 
         return view;
     }
